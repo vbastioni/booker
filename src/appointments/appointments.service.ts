@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Appointment, Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+
 import { AppointmentCreateDTO, AppointmentUpdateDTO } from '../_domain/appointments/appointment-dto';
 
 @Injectable()
 export class AppointmentsService {
     constructor(private readonly prisma: PrismaService) { }
 
-    private async noOverlap(
+    async noOverlap(
         hostId: number, buyerId: number, startTime: Date, endTime: Date,
     ): Promise<true | { _error: string; }> {
         if (startTime > endTime) {

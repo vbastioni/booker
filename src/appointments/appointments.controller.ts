@@ -6,8 +6,9 @@ import {
 import { AppointmentsService } from './appointments.service';
 import { intPipe } from '../_helpers/validationPipes/intPipe';
 import { Appointment } from '@prisma/client';
-import { AppointmentCreateDTO, AppointmentUpdateDTO } from '../_domain/appointments/appointment-dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+
+import { AppointmentCreateDTO, AppointmentUpdateDTO } from '../_domain/appointments/appointment-dto';
 
 @Controller('appointments')
 export class AppointmentsController {
@@ -16,8 +17,10 @@ export class AppointmentsController {
     @Get()
     async all(
         @Query('day') day?: Date,
+        @Query('size') size?: number,
+        @Query('offset') offset?: number,
     ) {
-        return await this.service.all({ day });
+        return await this.service.all({ day, size, offset });
     }
 
     @Post()

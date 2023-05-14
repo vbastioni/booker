@@ -1,5 +1,9 @@
 import { Prisma } from "@prisma/client";
-import { IsNumberString, IsOptional } from "class-validator";
+import { Transform } from "class-transformer";
+import { IsNumber, IsOptional } from "class-validator";
+
+import { argToInt } from "../../_helpers/transformers/transformer";
+
 
 export class FindBuyerParams {
     @IsOptional()
@@ -9,12 +13,14 @@ export class FindBuyerParams {
     company?: string;
 
     @IsOptional()
-    @IsNumberString()
-    size?: string;
+    @IsNumber()
+    @Transform(argToInt)
+    size?: number;
 
     @IsOptional()
-    @IsNumberString()
-    offset?: string;
+    @IsNumber()
+    @Transform(argToInt)
+    offset?: number;
 }
 
 export function buildArgs(params: FindBuyerParams) {
@@ -26,24 +32,16 @@ export function buildArgs(params: FindBuyerParams) {
             if (!value) {
                 return acc;
             }
-
-            switch (cur) {
-                case "name":
-                case "company":
-                    return { ...acc, [cur]: params[cur] };
-                // return { ...acc, [cur]: insensitiveStringFilter(params[cur]) }
-                default:
-                    throw new Error(`unhandled type for ${cur} (${value})`);
-            }
+            return { ...acc, [cur]: params[cur] };
         }, {} as Prisma.BuyerWhereInput);
     }
 
     if (params.offset !== undefined) {
-        args.skip = parseInt(params.offset);
+        args.skip = params.offset;
     }
 
     if (params.size !== undefined) {
-        args.take = parseInt(params.size);
+        args.take = params.size;
     }
 
     return args;

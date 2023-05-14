@@ -30,8 +30,12 @@ The needed features should be:
   - [x] Delete
   - [x] All
   - [x] All for a specific day
-  - [ ] No scheduling conflicts
+  - [x] No scheduling conflicts (no overlap function checked)
 
 #### Other
-- [ ] Search buyers by name
-- [ ] Search buyers by company
+- Controller
+  - [x] Search buyers by name
+  - [x] Search buyers by company
+- Service
+  - [ ] Search buyers by name
+  - [ ] Search buyers by company

@@ -1,12 +1,11 @@
-import { AppointmentType } from "@prisma/client";
-import { IsDate, IsNumber, IsOptional, IsUrl, MaxLength, MinLength } from "class-validator";
-import { IsAppointmentType } from "../../_helpers/validators/appointmentType-validator";
 import { PartialType } from '@nestjs/mapped-types';
+import { AppointmentType } from "@prisma/client";
+
+import { IsDate, IsNumber, IsOptional, IsUrl, MaxLength, MinLength } from "class-validator";
 import { Transform } from "class-transformer";
 
-function nullifyIfUndef<T>({value}: {value?: T}): T | null {
-    return value ?? null;
-}
+import { IsAppointmentType } from "../../_helpers/validators/appointmentType-validator";
+import { argToDate, argToInt, nullifyIfUndef } from "../../_helpers/transformers/transformer";
 
 export class AppointmentCreateDTO {
     @MinLength(3)
@@ -31,17 +30,17 @@ export class AppointmentCreateDTO {
     type: AppointmentType;
 
     @IsNumber()
-    @Transform(({value}) => Number(value))
+    @Transform(argToInt)
     hostId: number;
     @IsNumber()
-    @Transform(({value}) => Number(value))
+    @Transform(argToInt)
     buyerId: number;
 
     @IsDate()
-    @Transform(({value}) => new Date(value))
+    @Transform(argToDate)
     startTime: Date;
     @IsDate()
-    @Transform(({value}) => new Date(value))
+    @Transform(argToDate)
     endTime: Date;
 }
 

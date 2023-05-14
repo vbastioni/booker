@@ -1,26 +1,21 @@
-import { Controller, Get, HttpStatus, Query, Res } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
+
 import { BuyersService } from './buyers.service';
-import { Response } from 'express';
-import { FindBuyerParams } from '../_domain/buyer/find';
+import { FindBuyerParams } from '../_domain/buyers/find-buyers';
 
 
 @Controller('buyers')
 export class BuyersController {
     constructor(private readonly service: BuyersService) { }
 
-    @Get() async buyers() { return await this.service.all(); }
-
     @Get('find')
-    async getBy(
+    async find(
         @Query() query: FindBuyerParams,
-        @Res() response: Response,
     ) {
         if (!query.company && !query.name) {
-            response.json({ statusCode: HttpStatus.BAD_REQUEST }).send();
-            return;
+            throw new BadRequestException();
         }
 
-        const values = await this.service.findBuyersBy(query);
-        response.json(values).send();
+        return await this.service.find(query);
     }
 }

@@ -1,15 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { PrismaService } from 'nestjs-prisma';
 import { createMock } from '@golevelup/ts-jest';
 
-import { AppointmentsService } from './appointments.service';
-import { AppointmentsModule } from './appointments.module';
-import { AppointmentsController } from './appointments.controller';
+import { BuyersModule } from './buyers.module';
+import { BuyersController } from './buyers.controller';
+import { BuyersService } from './buyers.service';
 
 describe('AppointmentsModule', () => {
     it('should compile the module', async () => {
         const module = await Test.createTestingModule({
-            imports: [AppointmentsModule],
+            imports: [BuyersModule],
             providers: [
                 {
                     provide: PrismaService,
@@ -19,9 +19,9 @@ describe('AppointmentsModule', () => {
         }).compile();
 
         expect(module).toBeDefined();
-        expect(module.get(AppointmentsController))
-            .toBeInstanceOf(AppointmentsController);
-        expect(module.get(AppointmentsService))
-            .toBeInstanceOf(AppointmentsService);
+        expect(module.get(BuyersController))
+            .toBeInstanceOf(BuyersController);
+        expect(module.get(BuyersService))
+            .toBeInstanceOf(BuyersService);
     });
 });

@@ -26,7 +26,7 @@ export const allAppointments: Appointment[] = [
     }),
 ];
 
-export function mockAppointment(apt: Partial<Appointment>): Appointment {
+export function mockAppointment(apt: Partial<Appointment> = {}): Appointment {
     return {
         ...defaultAppointment,
         ...apt,

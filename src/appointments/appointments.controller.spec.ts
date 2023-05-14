@@ -1,10 +1,11 @@
-import { createMock } from '@golevelup/ts-jest';
+import { BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { createMock } from '@golevelup/ts-jest';
+import { PrismaService } from 'nestjs-prisma';
+
 import { AppointmentsController } from './appointments.controller';
 import { AppointmentsService } from './appointments.service';
-import { PrismaService } from 'nestjs-prisma';
-import { BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { allAppointments, defaultAppointment, mockAppointment } from '../_domain/appointments/mock';
 
 describe('AppointmentsController', () => {
