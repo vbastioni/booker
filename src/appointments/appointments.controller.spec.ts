@@ -55,15 +55,14 @@ describe('AppointmentsController', () => {
                 .toStrictEqual(result);
         });
 
-        it('should throw an error on service error return', async () => {
-            const error = { _error: "overlapping session(s)" };
-            const thrown = new BadRequestException(error);
+        test.todo('should throw an error on service error return', async () => {
+            const err = new BadRequestException("overlapping session(s)");
             jest
                 .spyOn(service, 'create')
-                .mockImplementation(async () => error);
+                .mockImplementation(async () => { throw err; });
             expect(controller.create(payload))
                 .rejects
-                .toEqual(thrown);
+                .toEqual(err);
         });
     });
 

@@ -27,12 +27,15 @@ export class AppointmentsController {
     async create(
         @Body() data: AppointmentCreateDTO,
     ) {
-        const v = await this.service.create(data);
-        if ("_error" in v) {
-            throw new BadRequestException(v);
+        try {
+            const { id } = await this.service.create(data);
+            return id;
+        } catch (e) {
+            if (e.name === "bookingError") {
+                throw new BadRequestException(e.message);
+            }
+            throw new InternalServerErrorException(e);
         }
-        const { id } = v;
-        return { id };
     }
 
     @Get(':id')

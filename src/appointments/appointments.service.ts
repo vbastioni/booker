@@ -1,45 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Appointment, Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 
 import { AppointmentCreateDTO, AppointmentUpdateDTO } from '../_domain/appointments/appointment-dto';
 
+function error(name: string, message: string): Error {
+    const e = new Error(message);
+    e.name = name;
+    return e;
+}
+
 @Injectable()
 export class AppointmentsService {
     constructor(private readonly prisma: PrismaService) { }
-
-    async noOverlap(
-        hostId: number, buyerId: number, startTime: Date, endTime: Date,
-    ): Promise<true | { _error: string; }> {
-        if (startTime > endTime) {
-            return { _error: "startTime > endTime" };
-        }
-
-        const timeIntervalCheck: Prisma.AppointmentWhereInput = {
-            startTime: { gte: startTime },
-            AND: {
-                endTime: { lte: endTime, }
-            }
-        };
-
-        const existing = await this.prisma.appointment.findFirst({
-            where: {
-                hostId,
-                ...timeIntervalCheck,
-                OR: {
-                    buyerId,
-                    ...timeIntervalCheck,
-                },
-            },
-        });
-
-        if (existing !== null) {
-            return { _error: "overlapping session(s)" };
-        }
-
-        return true;
-    }
-
     static prepDayQuery(day?: Date): Prisma.AppointmentWhereInput | undefined {
         if (!day) {
             return undefined;
@@ -71,15 +44,40 @@ export class AppointmentsService {
 
     async create(
         appointmentDTO: AppointmentCreateDTO
-    ): Promise<Appointment | { _error: string; }> {
+    ): Promise<Appointment> {
         const { hostId, buyerId, startTime, endTime } = appointmentDTO;
+        return await this.prisma.$transaction(async (tx) => {
+            if (startTime > endTime) {
+                throw error("bookingError", "startTime > endTime");
+            }
 
-        const noOverlap = await this.noOverlap(hostId, buyerId, startTime, endTime);
-        if (noOverlap !== true) {
-            return noOverlap;
-        }
+            const timeIntervalCheck: Prisma.AppointmentWhereInput = {
+                startTime: { gte: startTime },
+                AND: {
+                    endTime: { lte: endTime, }
+                }
+            };
 
-        return this.prisma.appointment.create({ data: appointmentDTO });
+            const existing = await tx.appointment.findFirst({
+                where: {
+                    hostId,
+                    ...timeIntervalCheck,
+                    OR: {
+                        buyerId,
+                        ...timeIntervalCheck,
+                    },
+                },
+            });
+
+            if (existing !== null) {
+                throw error("bookingError", "overlapping session(s)");
+            }
+
+            const apt = await tx.appointment.create({
+                data: appointmentDTO
+            });
+            return apt;
+        });
     }
 
     async read(id: number) {
