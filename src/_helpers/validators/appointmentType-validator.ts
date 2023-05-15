@@ -15,18 +15,9 @@ export function IsAppointmentType(validationOptions?: ValidationOptions) {
                         return false;
                     }
                     switch (AppointmentType[value]) {
-                        case 'VIRTUAL': {
-                            if (args.object["location"] !== undefined) {
-                                return false;
-                            }
-                            const link = args.object["link"];
-                            if (link !== undefined) {
-                                return isURL(link);
-                            }
-                        }
+                        case 'VIRTUAL': return args.object["location"] === undefined;
                         case 'PHYSICAL': return args.object["link"] === undefined;
                     }
-                    return true;
                 },
                 defaultMessage: ({ property,  }) => `${property} must be a valid AppointmentType value with adequate value`,
             },

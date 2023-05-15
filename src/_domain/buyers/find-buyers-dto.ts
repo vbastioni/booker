@@ -1,15 +1,17 @@
 import { Prisma } from "@prisma/client";
 import { Transform } from "class-transformer";
-import { IsNumber, IsOptional } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsPositive, MinLength, ValidateIf } from "class-validator";
 
 import { argToInt } from "../../_helpers/transformers/transformer";
 
 
-export class FindBuyerParams {
+export class FindBuyerParamsDTO {
     @IsOptional()
+    @IsNotEmpty()
     name?: string;
-
-    @IsOptional()
+    
+    @IsNotEmpty()
+    @ValidateIf((o) => o.name === undefined)
     company?: string;
 
     @IsOptional()
@@ -23,7 +25,7 @@ export class FindBuyerParams {
     offset?: number;
 }
 
-export function buildArgs(params: FindBuyerParams) {
+export function buildArgs(params: FindBuyerParamsDTO) {
     const args: Prisma.BuyerFindManyArgs = {};
 
     if (params.name || params.company) {

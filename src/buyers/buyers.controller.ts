@@ -1,8 +1,7 @@
 import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
 
 import { BuyersService } from './buyers.service';
-import { FindBuyerParams } from '../_domain/buyers/find-buyers';
-
+import { FindBuyerParamsDTO } from '../_domain/buyers/find-buyers-dto';
 
 @Controller('buyers')
 export class BuyersController {
@@ -10,9 +9,10 @@ export class BuyersController {
 
     @Get('find')
     async find(
-        @Query() query: FindBuyerParams,
+        @Query() query: FindBuyerParamsDTO,
     ) {
-        if (!query.company && !query.name) {
+        const requireOne: (keyof FindBuyerParamsDTO)[] = ["company", 'name'];
+        if (!requireOne.some((k) => query[k] !== undefined)) {
             throw new BadRequestException();
         }
 

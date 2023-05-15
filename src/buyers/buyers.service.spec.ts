@@ -2,7 +2,7 @@ import { createMock } from "@golevelup/ts-jest";
 import { BuyersService } from "./buyers.service";
 import { PrismaService } from "nestjs-prisma";
 import { Test, TestingModule } from "@nestjs/testing";
-import { FindBuyerParams, buildArgs } from "../_domain/buyers/find-buyers";
+import { FindBuyerParamsDTO, buildArgs } from "../_domain/buyers/find-buyers-dto";
 import { Prisma } from "@prisma/client";
 
 describe('BuyersService', () => {
@@ -36,7 +36,7 @@ describe('BuyersService', () => {
                 company: "Vuitton",
                 offset: 0,
                 size: 1,
-            }] as FindBuyerParams[]) {
+            }] as FindBuyerParamsDTO[]) {
                 const args: Prisma.BuyerFindManyArgs = buildArgs(params);
                 prisma.buyer.findMany = jest.fn().mockReturnValue({
                     name: "Georges",
