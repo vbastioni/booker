@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { ValidationError, validate } from "class-validator";
-import { AppointmentUpdateDTO } from "./appointment-dto";
+import { AppointmentCreateDTO, AppointmentUpdateDTO } from "./appointment-dto";
 
 describe('appointment-dto', () => {
     describe('AppointmentCreateDTO', () => {
@@ -37,6 +37,22 @@ describe('appointment-dto', () => {
             const payload = { type: "VIRTUAL" };
             const errors = await convAndValidate(payload);
             expect(errors.length).toBe(0);
+        });
+
+        it('should returns a set of errors on missing fields', async () => {
+            const payload = { type: "VIRTUAL" };
+            const body = plainToInstance(AppointmentCreateDTO, payload);
+            const errors = await validate(body);
+            expect(errors.length).toBe(5);
+            const strErrors = JSON.stringify(errors);
+            [
+                'title must be shorter than or equal to 64 characters',,
+                'title must be longer than or equal to 3 characters',
+                'hostId must be a number conforming to the specified constraints',
+                'buyerId must be a number conforming to the specified constraints',
+                'startTime must be a Date instance',
+                'endTime must be a Date instance',
+            ].every((err) => strErrors.includes(err));
         });
     });
 });
