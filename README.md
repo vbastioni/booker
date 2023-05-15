@@ -19,14 +19,14 @@ The needed features should be:
 - Controller:
   - [x] Create
   - [x] Read
-  - [ ] Update
+  - [x] Update
   - [x] Delete
   - [x] All
   - [x] All for a specific day
 - Service:
   - [x] Create
   - [x] Read
-  - [ ] Update
+  - [x] Update
   - [x] Delete
   - [x] All
   - [x] All for a specific day
@@ -37,5 +37,5 @@ The needed features should be:
   - [x] Search buyers by name
   - [x] Search buyers by company
 - Service
-  - [ ] Search buyers by name
-  - [ ] Search buyers by company
+  - [x] Search buyers by name
+  - [x] Search buyers by company
