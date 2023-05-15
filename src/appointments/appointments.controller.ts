@@ -52,8 +52,7 @@ export class AppointmentsController {
         @Body() data: AppointmentUpdateDTO,
     ) {
         try {
-            console.log(id, data);
-            throw new NotImplementedException();
+            return this.service.updatePatch(id, data);
         } catch (e) {
             throw new InternalServerErrorException();
         }
@@ -65,8 +64,7 @@ export class AppointmentsController {
         @Body() data: AppointmentCreateDTO,
     ) {
         try {
-            console.log(id, data);
-            throw new NotImplementedException();
+            return this.service.updatePut(id, data);
         } catch (e) {
             throw new InternalServerErrorException();
         }

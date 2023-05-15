@@ -88,9 +88,17 @@ describe('AppointmentsController', () => {
     });
 
     describe('update-patch', () => {
-        test.todo('should return the id of the element modified on success');
-        test.todo('should return a 400 Bad Request with info on bad requestion');
-        it('should throw an error other ', () => {
+        it('should return the id of the element modified on success', async () => {
+            const apt = mockAppointment({ id: 12 });
+            const { id, ...data } = apt;
+            jest.spyOn(service, 'updatePatch')
+                .mockImplementation(async () => apt);
+            expect(await controller.updatePatch(id, data))
+                .toStrictEqual(apt);
+        });
+        it('should re throw an unhandled error', () => {
+            jest.spyOn(service, 'updatePatch')
+                .mockImplementation(() => { throw new InternalServerErrorException(); });
             expect(controller.updatePatch(Number.MAX_SAFE_INTEGER, {}))
                 .rejects
                 .toEqual(new InternalServerErrorException());
@@ -100,9 +108,17 @@ describe('AppointmentsController', () => {
     describe('update-put', () => {
         const { id: _, ...data } = defaultAppointment;
 
-        test.todo('should return the id of the element modified on success');
-        test.todo('should return a 400 Bad Request with info on bad requestion');
-        it('should throw an error other ', () => {
+        it('should return the id of the element modified on success', async () => {
+            const apt = mockAppointment({ id: 12 });
+            const { id, ...data } = apt;
+            jest.spyOn(service, 'updatePut')
+                .mockImplementation(async () => apt)
+            expect(await controller.updatePut(id, data))
+                .toStrictEqual(apt);
+        });
+        it('should re throw an unhandled error', () => {
+            jest.spyOn(service, 'updatePut')
+                .mockImplementation(() => { throw new InternalServerErrorException(); });
             expect(controller.updatePut(Number.MAX_SAFE_INTEGER, data))
                 .rejects
                 .toEqual(new InternalServerErrorException());

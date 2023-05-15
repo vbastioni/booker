@@ -1,34 +1,7 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { INestApplication } from '@nestjs/common';
-// import * as request from 'supertest';
-// import { AppModule } from './../src/app.module';
-
-// describe('AppController (e2e)', () => {
-//   let app: INestApplication;
-
-//   beforeEach(async () => {
-//     const moduleFixture: TestingModule = await Test.createTestingModule({
-//       imports: [AppModule],
-//     }).compile();
-
-//     app = moduleFixture.createNestApplication();
-//     await app.init();
-//   });
-
-//   it('/ (GET)', () => {
-//     return request(app.getHttpServer())
-//       .get('/')
-//       .expect(200)
-//       .expect('Hello World!');
-//   });
-// });
-
-// Test format based on https://docs.nestjs.com/fundamentals/testing#end-to-end-testing
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { Appointment } from '@prisma/client';
-import { PrismaModule } from 'nestjs-prisma';
 import { AppointmentsModule } from './../src/appointments/appointments.module';
 import { AppointmentsService } from './../src/appointments/appointments.service';
 

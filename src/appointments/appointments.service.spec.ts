@@ -6,12 +6,13 @@ import { AppointmentsService } from './appointments.service';
 import { defaultAppointment, mockAppointment } from '../_domain/appointments/mock';
 
 describe('AppointmentsService', () => {
+    let module: TestingModule;
     let service: AppointmentsService;
     let prisma = createMock<PrismaService>();
-    const { findFirst } = prisma.appointment;
+    const { findFirst, update } = prisma.appointment;
 
-    beforeEach(async () => {
-        const module: TestingModule = await Test.createTestingModule({
+    beforeAll(async () => {
+        module = await Test.createTestingModule({
             providers: [
                 {
                     provide: PrismaService,
@@ -20,7 +21,8 @@ describe('AppointmentsService', () => {
                 AppointmentsService,
             ],
         }).compile();
-
+    })
+    beforeEach(async () => {
         service = module.get<AppointmentsService>(AppointmentsService);
     });
 
@@ -130,11 +132,27 @@ describe('AppointmentsService', () => {
     });
 
     describe('update-patch', () => {
-        //
+        it('should format the argument to the request', async () => {
+            const apt = mockAppointment({ id: 12 });
+            const { id, ...data } = apt;
+            const { link, location } = data;
+            const payload = { link, location };
+            prisma.appointment.update = jest.fn().mockReturnValue(new Promise((resolve) => resolve(apt)));
+            await service.updatePatch(id, payload);
+            expect(prisma.appointment.update).toBeCalledWith({ where: { id }, data: payload });
+            prisma.appointment.update = update;
+        });
     });
 
     describe('update-put', () => {
-        //
+        it('should format the argument to the request', async () => {
+            const apt = mockAppointment({ id: 12 });
+            const { id, ...data } = apt;
+            prisma.appointment.update = jest.fn().mockReturnValue(new Promise((resolve) => resolve(apt)));
+            await service.updatePut(id, data);
+            expect(prisma.appointment.update).toBeCalledWith({ where: { id }, data });
+            prisma.appointment.update = update;
+        });
     });
 
     describe('delete', () => {
