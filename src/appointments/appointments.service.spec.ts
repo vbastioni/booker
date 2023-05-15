@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'nestjs-prisma';
 import { createMock } from '@golevelup/ts-jest';
 
-import { AppointmentsService } from './appointments.service';
+import { AppointmentsService, error } from './appointments.service';
 import { defaultAppointment, mockAppointment } from '../_domain/appointments/mock';
 
 describe('AppointmentsService', () => {
@@ -175,4 +175,14 @@ describe('AppointmentsService', () => {
                 .toBeCalledWith({ where: { id: apt.id } });
         });
     });
+
+    describe('createError', () => {
+        it ('should format the error', () => {
+            const message = "error message";
+            const name = "error name";
+            const err = new Error(message);
+            err.name = name;
+            expect(error(name, message)).toStrictEqual(err);
+        })
+    })
 });

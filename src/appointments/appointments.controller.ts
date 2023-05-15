@@ -29,7 +29,7 @@ export class AppointmentsController {
     ) {
         try {
             const { id } = await this.service.create(data);
-            return id;
+            return { id };
         } catch (e) {
             if (e.name === "bookingError") {
                 throw new BadRequestException(e.message);

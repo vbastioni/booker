@@ -5,7 +5,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { PrismaService } from 'nestjs-prisma';
 
 import { AppointmentsController } from './appointments.controller';
-import { AppointmentsService } from './appointments.service';
+import { AppointmentsService, error } from './appointments.service';
 import { allAppointments, defaultAppointment, mockAppointment } from '../_domain/appointments/mock';
 
 describe('AppointmentsController', () => {
@@ -55,14 +55,28 @@ describe('AppointmentsController', () => {
                 .toStrictEqual(result);
         });
 
-        test.todo('should throw an error on service error return', async () => {
-            const err = new BadRequestException("overlapping session(s)");
+        it('should throw a 400 error on bookingError return', async () => {
+            const message = "overlapping session(s)";
+            const serviceError = error("bookingError", message);
+            const err = new BadRequestException(message);
             jest
                 .spyOn(service, 'create')
-                .mockImplementation(async () => { throw err; });
+                .mockImplementation(async () => { throw serviceError; });
             expect(controller.create(payload))
                 .rejects
-                .toEqual(err);
+                .toStrictEqual(err);
+        });
+
+        it('should throw a 500 error on non bookingError return', async () => {
+            const message = "unhandled error";
+            const serviceError = new Error(message);
+            const err = new InternalServerErrorException(message);
+            jest
+                .spyOn(service, 'create')
+                .mockImplementation(async () => { throw serviceError; });
+            expect(controller.create(payload))
+                .rejects
+                .toStrictEqual(err);
         });
     });
 

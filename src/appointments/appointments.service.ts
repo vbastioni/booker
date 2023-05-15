@@ -4,7 +4,7 @@ import { PrismaService } from 'nestjs-prisma';
 
 import { AppointmentCreateDTO, AppointmentUpdateDTO } from '../_domain/appointments/appointment-dto';
 
-function error(name: string, message: string): Error {
+export function error(name: string, message: string): Error {
     const e = new Error(message);
     e.name = name;
     return e;
@@ -45,6 +45,17 @@ export class AppointmentsService {
     async create(
         appointmentDTO: AppointmentCreateDTO
     ): Promise<Appointment> {
+        // Other option would have been
+        //  1) a BEFORE trigger function, to check and prevent if already present
+        //  2) a raw query to find if appointment exists (to be tested)
+        //      SELECT true
+        //      WHERE
+        //          (hostId = ${hostId} OR buyerId = ${buyerId})
+        //        AND
+        //          (startTime >= ${startTime} AND endTime < ${endTime})
+        //      FROM
+        //          prisma.appointments
+
         const { hostId, buyerId, startTime, endTime } = appointmentDTO;
         return await this.prisma.$transaction(async (tx) => {
             if (startTime > endTime) {
@@ -54,7 +65,7 @@ export class AppointmentsService {
             const timeIntervalCheck: Prisma.AppointmentWhereInput = {
                 startTime: { gte: startTime },
                 AND: {
-                    endTime: { lte: endTime, }
+                    endTime: { lt: endTime, }
                 }
             };
 
