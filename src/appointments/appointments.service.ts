@@ -3,6 +3,7 @@ import { Appointment, Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 
 import { AppointmentCreateDTO, AppointmentUpdateDTO } from '../_domain/appointments/appointment-dto';
+import { time } from 'console';
 
 export function error(name: string, message: string): Error {
     const e = new Error(message);
@@ -13,6 +14,7 @@ export function error(name: string, message: string): Error {
 @Injectable()
 export class AppointmentsService {
     constructor(private readonly prisma: PrismaService) { }
+
     static prepDayQuery(day?: Date): Prisma.AppointmentWhereInput | undefined {
         if (!day) {
             return undefined;
@@ -62,25 +64,10 @@ export class AppointmentsService {
                 throw error("bookingError", "startTime > endTime");
             }
 
-            const timeIntervalCheck: Prisma.AppointmentWhereInput = {
-                startTime: { gte: startTime },
-                AND: {
-                    endTime: { lt: endTime, }
-                }
-            };
-
-            const existing = await tx.appointment.findFirst({
-                where: {
-                    hostId,
-                    ...timeIntervalCheck,
-                    OR: {
-                        buyerId,
-                        ...timeIntervalCheck,
-                    },
-                },
-            });
-
-            if (existing !== null) {
+            const existings = await tx.$queryRaw<{ id: number }[]>(
+                Prisma.sql`SELECT "public"."Appointment"."id" FROM "public"."Appointment" WHERE ("public"."Appointment"."startTime" >= ${startTime} AND "public"."Appointment"."endTime" <= ${endTime} AND ("public"."Appointment"."hostId" = ${hostId} OR "public"."Appointment"."buyerId" = ${buyerId})) LIMIT 1`
+            );
+            if (existings.length > 0) {
                 throw error("bookingError", "overlapping session(s)");
             }
 
